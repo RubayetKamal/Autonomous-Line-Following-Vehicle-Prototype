@@ -1,1 +1,140 @@
+const int motorAenable = 11;
+const int motorAcontrolA = 10;
+const int motorAcontrolB = 9;
 
+const int motorBcontrolA = 8;
+const int motorBcontrolB = 7;
+const int motorBenable = 6;
+
+const int LeftInfraRed = 2;
+const int RightInfraRed = 3;
+
+const int triggerPin = 4;
+const int echoPin = 5;
+float distanceFromObject = 5000;
+
+  int baseSpeed = 100;
+  int turnSpeed = 70;
+
+
+void activateTriggerPin() {
+  digitalWrite(triggerPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(triggerPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerPin, LOW);
+}
+float measureDistance() {
+  activateTriggerPin();
+  long travelTime = pulseIn(echoPin, HIGH,30000);
+  return travelTime * 0.34 / 2;  // Distance in mm
+}
+
+void motorAForward(int speedA) {
+  analogWrite(motorAenable, speedA);
+  digitalWrite(motorAcontrolA, LOW);
+  digitalWrite(motorAcontrolB, HIGH);
+}
+
+void motorBForward(int speedB) {
+  analogWrite(motorBenable, speedB);
+  digitalWrite(motorBcontrolA, HIGH);
+  digitalWrite(motorBcontrolB, LOW);
+}
+
+void motorABackward(int speedA) {
+  analogWrite(motorAenable, speedA);
+  digitalWrite(motorAcontrolA, HIGH);
+  digitalWrite(motorAcontrolB, LOW);
+}
+
+void motorBBackward(int speedB) {
+  analogWrite(motorBenable, speedB);
+  digitalWrite(motorBcontrolA, LOW);
+  digitalWrite(motorBcontrolB, HIGH);
+}
+void backward(int speed){
+  motorABackward(speed);
+  motorBBackward(speed);
+}
+
+
+
+void motorAStop() {
+  analogWrite(motorAenable,0);
+}
+
+void motorBStop() {
+  analogWrite(motorBenable,0);
+}
+
+void forward(int carSpeed) {
+  motorAForward(carSpeed);
+  motorBForward(carSpeed);
+}
+
+void stop() {
+  motorAStop();
+  motorBStop();
+}
+
+void turn180() {
+  motorABackward(baseSpeed);
+  motorBForward(baseSpeed);
+  delay(1000);  // Adjust this delay based on your motor speed and desired turn time
+  stop();
+}
+
+void decelerate(){
+  for(int i = baseSpeed; i>0;i-=30){
+    forward(i);
+  }
+}
+
+void setup() {
+  pinMode(motorAcontrolA, OUTPUT);
+  pinMode(motorAcontrolB, OUTPUT);
+  pinMode(motorBcontrolA, OUTPUT);
+  pinMode(motorBcontrolB, OUTPUT);
+  pinMode(motorAenable, OUTPUT);
+  pinMode(motorBenable, OUTPUT);
+
+  pinMode(LeftInfraRed, INPUT);
+  pinMode(RightInfraRed, INPUT);
+
+  pinMode(triggerPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  analogWrite(motorAenable, 255);  //inital speed of Motors
+  analogWrite(motorBenable, 255);
+}
+void avoidObject() {
+  distanceFromObject = measureDistance();
+  if (distanceFromObject<= 200.){
+    Serial.println("Obstacle FOund");
+    stop();
+    delay(10);
+  }
+}
+
+void loop() {
+  int RightInfraRedValue = digitalRead(RightInfraRed);
+  int LeftInfraRedValue = digitalRead(LeftInfraRed);
+
+  avoidObject();  
+
+  if (LeftInfraRedValue == HIGH && RightInfraRedValue == HIGH) {
+    forward(baseSpeed);// Black line detected, go straight
+    //avoidObject();
+  } else if (LeftInfraRedValue ==LOW && RightInfraRedValue == HIGH) { // Left sensor off the line, right sensor on the line, turn left
+    motorABackward(150); //reduce speed of left motor
+    motorBForward(baseSpeed + turnSpeed); //increase speed of right motor
+  } else if (LeftInfraRedValue == HIGH && RightInfraRedValue == LOW) { //// Right sensor off the line, left sensor on the line, turn right
+    motorAForward(baseSpeed + turnSpeed); //increase speed of left motor
+    motorBBackward(150); //reduce speed of right motor
+  } else { //error meaning both sensors are not finding a black line, meaning car is off tracks
+    
+    backward(baseSpeed); //reduce speed of right motor
+  }
+  
+}
