@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.6//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_6.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+chan blueDetected, redDetected, goingForwardFromRight,turningRight,goingForwardFromLeft,turningLeft,unknownObject,goingBackToLineAfterOvertaking,goingBackToLineAfterTurningAround,CarParked,Stopping; </declaration>
+	<template>
+		<name>RightInfraRed</name>
+		<location id="id0" x="288" y="22">
+			<name x="278" y="-12">On</name>
+		</location>
+		<location id="id1" x="34" y="25">
+			<name x="24" y="-9">Off</name>
+		</location>
+		<init ref="id1"/>
+		<transition id="id2">
+			<source ref="id0"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="76" y="102">goingForwardFromRight?</label>
+			<nail x="297" y="127"/>
+			<nail x="33" y="127"/>
+		</transition>
+		<transition id="id3">
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="synchronisation" x="93" y="0">turningRight?</label>
+		</transition>
+	</template>
+	<template>
+		<name>LeftInfraRed</name>
+		<location id="id4" x="-306" y="-85">
+			<name x="-316" y="-119">Off</name>
+		</location>
+		<location id="id5" x="-42" y="-85">
+			<name x="-52" y="-119">On</name>
+		</location>
+		<init ref="id4"/>
+		<transition id="id6">
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="-288" y="8">goingForwardFromLeft?</label>
+			<nail x="-42" y="25"/>
+			<nail x="-306" y="25"/>
+		</transition>
+		<transition id="id7">
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="synchronisation" x="-288" y="-102">turningLeft?</label>
+		</transition>
+	</template>
+	<template>
+		<name>Car</name>
+		<location id="id8" x="-450" y="-93">
+			<name x="-518" y="-127">SwitchOn</name>
+		</location>
+		<location id="id9" x="187" y="-110">
+			<name x="204" y="-119">Forward</name>
+		</location>
+		<location id="id10" x="688" y="161">
+			<name x="663" y="178">TurnRight</name>
+		</location>
+		<location id="id11" x="-170" y="204">
+			<name x="-213" y="213">TurnLeft</name>
+		</location>
+		<location id="id12" x="688" y="-391">
+			<name x="678" y="-425">TurnAround</name>
+		</location>
+		<location id="id13" x="-127" y="-391">
+			<name x="-137" y="-425">Park</name>
+		</location>
+		<location id="id14" x="229" y="-408">
+			<name x="219" y="-442">Overtake</name>
+		</location>
+		<location id="id15" x="-442" y="-399">
+			<name x="-452" y="-433">Parked</name>
+		</location>
+		<location id="id16" x="535" y="-153">
+			<name x="525" y="-187">Stopped</name>
+		</location>
+		<init ref="id8"/>
+		<transition id="id17">
+			<source ref="id16"/>
+			<target ref="id9"/>
+			<nail x="535" y="-85"/>
+		</transition>
+		<transition id="id18">
+			<source ref="id9"/>
+			<target ref="id16"/>
+			<label kind="synchronisation" x="374" y="-161">Stopping!</label>
+		</transition>
+		<transition id="id19">
+			<source ref="id15"/>
+			<target ref="id8"/>
+		</transition>
+		<transition id="id20">
+			<source ref="id13"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="-323" y="-382">CarParked!</label>
+		</transition>
+		<transition id="id21">
+			<source ref="id12"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="357" y="-399">goingBackToLineAfterTurningAround!</label>
+			<nail x="416" y="-331"/>
+		</transition>
+		<transition id="id22">
+			<source ref="id14"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-42" y="-425">goingBackToLineAfterOvertaking!</label>
+			<nail x="0" y="-399"/>
+		</transition>
+		<transition id="id23">
+			<source ref="id11"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="-289" y="-34">goingForwardFromLeft!</label>
+			<nail x="-238" y="17"/>
+		</transition>
+		<transition id="id24">
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="212" y="68">goingForwardFromRight!</label>
+			<nail x="212" y="8"/>
+		</transition>
+		<transition id="id25">
+			<source ref="id9"/>
+			<target ref="id12"/>
+			<label kind="synchronisation" x="442" y="-255">unknownObject!</label>
+		</transition>
+		<transition id="id26">
+			<source ref="id9"/>
+			<target ref="id14"/>
+			<label kind="synchronisation" x="221" y="-306">redDetected!</label>
+		</transition>
+		<transition id="id27">
+			<source ref="id9"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="-85" y="-246">blueDetected!</label>
+		</transition>
+		<transition id="id28">
+			<source ref="id9"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="408" y="-17">turningRight!</label>
+		</transition>
+		<transition id="id29">
+			<source ref="id9"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="76" y="17">turningLeft!</label>
+		</transition>
+		<transition id="id30">
+			<source ref="id8"/>
+			<target ref="id9"/>
+		</transition>
+	</template>
+	<template>
+		<name>TCS3200AndHCSR04</name>
+		<location id="id31" x="-187" y="-51">
+			<name x="-314" y="-85">EvaluatingObject</name>
+		</location>
+		<location id="id32" x="-17" y="-382">
+			<name x="-27" y="-416">RedObjectDetected</name>
+		</location>
+		<location id="id33" x="314" y="-187">
+			<name x="304" y="-221">BlueObjectDetected</name>
+		</location>
+		<location id="id34" x="229" y="76">
+			<name x="219" y="42">ObjectUnknown</name>
+		</location>
+		<location id="id35" x="-510" y="-153">
+			<name x="-663" y="-178">MeasuringDistance</name>
+		</location>
+		<location id="id36" x="-476" y="119">
+			<name x="-502" y="136">NoObjectDetected</name>
+		</location>
+		<location id="id37" x="-416" y="-51">
+			<name x="-484" y="-34">ObjectDetected</name>
+		</location>
+		<init ref="id35"/>
+		<transition id="id38">
+			<source ref="id33"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-722" y="204">CarParked?</label>
+			<nail x="323" y="221"/>
+			<nail x="-731" y="229"/>
+			<nail x="-671" y="-102"/>
+		</transition>
+		<transition id="id39">
+			<source ref="id34"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-340" y="85">goingBackToLineAfterTurningAround?</label>
+			<nail x="-612" y="220"/>
+			<nail x="-620" y="-60"/>
+		</transition>
+		<transition id="id40">
+			<source ref="id32"/>
+			<target ref="id35"/>
+			<label kind="synchronisation" x="-551" y="-403">goingBackToLineAfterOvertaking?</label>
+			<nail x="-569" y="-382"/>
+		</transition>
+		<transition id="id41">
+			<source ref="id37"/>
+			<target ref="id31"/>
+			<label kind="synchronisation" x="-382" y="-68">Stopping?</label>
+		</transition>
+		<transition id="id42">
+			<source ref="id36"/>
+			<target ref="id35"/>
+			<nail x="-552" y="170"/>
+			<nail x="-569" y="-34"/>
+		</transition>
+		<transition id="id43">
+			<source ref="id35"/>
+			<target ref="id36"/>
+		</transition>
+		<transition id="id44">
+			<source ref="id35"/>
+			<target ref="id37"/>
+		</transition>
+		<transition id="id45">
+			<source ref="id31"/>
+			<target ref="id34"/>
+			<label kind="synchronisation" x="-136" y="8">unknownObject?</label>
+		</transition>
+		<transition id="id46">
+			<source ref="id31"/>
+			<target ref="id33"/>
+			<label kind="synchronisation" x="8" y="-153">blueDetected?</label>
+		</transition>
+		<transition id="id47">
+			<source ref="id31"/>
+			<target ref="id32"/>
+			<label kind="synchronisation" x="-85" y="-229">redDetected?</label>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+ObjectManagement = TCS3200AndHCSR04();
+MyAuto = Car();
+LeftHandle = LeftInfraRed();
+RightHandle = RightInfraRed();
+// List one or more processes to be composed into a system.
+system MyAuto,ObjectManagement, LeftHandle, RightHandle;
+</system>
+	<queries>
+		<query>
+			<formula/>
+			<comment/>
+		</query>
+	</queries>
+</nta>
