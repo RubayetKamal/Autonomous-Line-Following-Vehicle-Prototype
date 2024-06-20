@@ -51,6 +51,8 @@ int RightInfraRedValue = 1;
 int LeftInfraRedValue = 1;
 
 void evaluatingColour() {
+  redFlag = false;
+  blueFlag = false;
   Serial.println("------------------------------");
   {
 
@@ -179,31 +181,6 @@ void stop() {
   motorBStop();
 }
 
-void turn180() {
-  motorABackward(baseSpeed);
-  motorBForward(baseSpeed);
-  delay(1000);
-  if (whiteLine) {
-    do {
-      motorABackward(baseSpeed);
-      motorBForward(baseSpeed);
-      InfraRedManager();
-
-    } while (RightInfraRedValue == HIGH && LeftInfraRedValue == HIGH);
-  } else {
-    do {
-      motorABackward(baseSpeed);
-      motorBForward(baseSpeed);
-      InfraRedManager();
-
-    } while (RightInfraRedValue == LOW && LeftInfraRedValue == LOW);
-  }
-
-
-  stop();
-  delay(10);
-}
-
 void turnLeft45() {
   motorABackward(180);
   motorBForward(180);
@@ -308,6 +285,31 @@ void avoidObject() {
   blueFlag = false;
 }
 
+void turn180() {
+  motorABackward(baseSpeed);
+  motorBForward(baseSpeed);
+  delay(1000);
+  if (whiteLine) {
+    do {
+      motorABackward(baseSpeed);
+      motorBForward(baseSpeed);
+      InfraRedManager();
+
+    } while (RightInfraRedValue == HIGH && LeftInfraRedValue == HIGH);
+  } else {
+    do {
+      motorABackward(baseSpeed);
+      motorBForward(baseSpeed);
+      InfraRedManager();
+
+    } while (RightInfraRedValue == LOW && LeftInfraRedValue == LOW);
+  }
+
+
+  stop();
+  delay(10);
+}
+
 void overtake() {
   turnLeft45();
 
@@ -344,48 +346,68 @@ void overtake() {
 
     goStraightShort();
   }
-  // turnLeft90();
 }
 
 void parkCar() {
-  // Turn 90 degrees to the left
+  // Turn 90 degrees to the right
   motorAForward(180);
   motorBBackward(180);
-  delay(500);  // Adjust the delay to achieve a 90-degree turn
+  delay(600);  // Adjust the delay to achieve a 90-degree turn
+
   stop();
   delay(1000);
 
-
-  stop();
-  delay(10);  // Small delay after stopping
-
-  // Go back a little bit
-  motorABackward(200);
-  motorBBackward(220);
-  delay(500);  // Adjust the delay to move back a little bit
-
   if (whiteLine) {
+
     do {
-      stop();
-      delay(10);
+      backward(80);
+      InfraRedManager();
+    } while (RightInfraRedValue == HIGH && LeftInfraRedValue == HIGH);
+
+    do {
       InfraRedManager();
       distanceFromObject = measureDistance();
-      if (distanceFromObject >= 10 && distanceFromObject < 200) {
-        turnRight45();
-        break;
-      }
-    } while (LeftInfraRedValue == HIGH && RightInfraRedValue == HIGH);
-  } else {
-    do {
+
       stop();
       delay(10);
-      InfraRedManager();
-      distanceFromObject = measureDistance();
-      if (distanceFromObject >= 10 && distanceFromObject < 200) {
-        turnRight45();
+
+      if (distanceFromObject > 10 && distanceFromObject <= 100) {
+        forward(baseSpeed);
+        delay(500);
+        do {
+          InfraRedManager();
+          motorBBackward(180);
+          motorAForward(180);
+        } while (LeftInfraRedValue == HIGH);
         break;
       }
-    } while (LeftInfraRedValue == LOW && RightInfraRedValue == LOW);
+    } while (LeftInfraRedValue == LOW || RightInfraRedValue == LOW);
+
+
+  }
+
+  else {
+    do {
+      backward(80);
+      InfraRedManager();
+    } while (RightInfraRedValue == LOW && LeftInfraRedValue == LOW);
+
+    do {
+      InfraRedManager();
+      distanceFromObject = measureDistance();
+      stop();
+      delay(10);
+      if (distanceFromObject > 10 && distanceFromObject <= 100) {
+        forward(baseSpeed);
+        delay(500);
+        do {
+          InfraRedManager();
+          motorBBackward(180);
+          motorAForward(180);
+        } while (LeftInfraRedValue == LOW);
+        break;
+      }
+    } while (LeftInfraRedValue == HIGH || RightInfraRedValue == HIGH);
   }
 }
 
@@ -440,19 +462,6 @@ void loop() {
       motorBBackward(150);                                                //reduce speed of right motor
     } else {                                                              //error meaning both sensors are not finding a black line, meaning car is off tracks
       backward(baseSpeed);
-
-      motorBForward(255);
-      motorABackward(255);
-      delay(500);  // Adjust the delay to achieve a 90-degree turn
-
-      do {
-        InfraRedManager();
-        if (LeftInfraRedValue == LOW) {
-          motorABackward(150);                   //reduce speed of left motor
-          motorBForward(baseSpeed + turnSpeed);  //increase speed of right motor
-          break;
-        }
-      } while (LeftInfraRedValue == HIGH && RightInfraRedValue == HIGH);
     }
 
 
@@ -472,19 +481,6 @@ void loop() {
       motorBBackward(150);                                                //reduce speed of right motor
     } else {                                                              //error meaning both sensors are not finding a black line, meaning car is off tracks
       backward(baseSpeed);
-
-      motorBForward(255);
-      motorABackward(255);
-      delay(500);  // Adjust the delay to achieve a 270-degree turn
-
-      do {
-        InfraRedManager();
-        if (LeftInfraRedValue == HIGH) {
-          motorABackward(150);                   //reduce speed of left motor
-          motorBForward(baseSpeed + turnSpeed);  //increase speed of right motor
-          break;
-        }
-      } while (LeftInfraRedValue == LOW && RightInfraRedValue == LOW);
     }
   }
 }
